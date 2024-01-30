@@ -12,28 +12,50 @@ def change_font(*args):
     text_area.config(font=(font_name.get(), size_box.get()))
 
 def new_file():
-    pass
+    window.title("Untitled 🖊️")
+    text_area.delete(1.0, END)
 
 def open_file():
-    pass
+    file = askopenfilename(defaultextension=".txt", filetypes=[("All Files", "*.*"), ("Text Documents", "*.txt")])
+    try:
+        window.title(os.path.basename(file))
+        text_area.delete(1.0, END)
+        file = open(file, "r")
+        text_area.insert(1.0, file.read())
+    except Exception:
+        print("File could not be read.")
+    finally:
+        file.close()
 
 def save_file():
-    pass
+    file = filedialog.asksaveasfilename(initialfile="untitled.txt",
+                                        defaultextension=".txt", filetypes=[("All Types", "*.*"), ("Text Documents",  "*.txt")])
+    if file is None:
+        return
+    else:
+        try:
+            window.title(os.path.basename(file))
+            file = open(file, "w")
+            file.write(text_area.get(1.0, END))
+        except Exception:
+            print("File could not be saved.")
+        finally:
+            file.close()
 
 def cut():
-    pass
+    text_area.event_generate("<<Cut>>")
 
 def copy():
-    pass
+    text_area.event_generate("<<Copy>>")
 
 def paste():
-    pass
+    text_area.event_generate("<<Paste>>")
 
 def about():
-    pass
+    showinfo("About this program", "This is a mini notepad, good for keeping quick thoughts.")
 
 def quit():
-    pass
+    window.destroy()
 
 window = Tk()
 window.title("Mini Text Editor 📒")
@@ -87,6 +109,15 @@ file_menu.add_command(label="Save", command=save_file)
 file_menu.add_separator()
 file_menu.add_command(label="Exit", command=quit)
 
+edit_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Edit", menu=edit_menu)
+edit_menu.add_command(label="Cut", command=cut)
+edit_menu.add_command(label="Copy", command=copy)
+edit_menu.add_command(label="Paste", command=paste)
+
+help_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Help ", menu=help_menu)
+help_menu.add_command(label="About", command=about)
 
 
 window.mainloop()
